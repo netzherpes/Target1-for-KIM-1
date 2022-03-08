@@ -1,0 +1,237 @@
+ca65 V2.19 - Git 4f87c7c
+Main file   : .\target1.cc65.S
+Current file: .\target1.cc65.S
+
+000000r 1               
+000000r 1               ;*****************************
+000000r 1               ;* Target 1 Column           *
+000000r 1               ;*                           *
+000000r 1               ;* (c) Fer Weber             *
+000000r 1               ;* Kim Kenner 1979           *
+000000r 1               ;*****************************
+000000r 1                        .setcpu "6502"
+000000r 1               SEGPTR   =       $00
+000000r 1               DIGPTR   =       $01
+000000r 1               SPEED    =       $02
+000000r 1               SEG1     =       $03
+000000r 1               SEGOF1   =       $04
+000000r 1               SEG2     =       $05
+000000r 1               SEGOF2   =       $06
+000000r 1               SEG3     =       $07
+000000r 1               SEGOF3   =       $08
+000000r 1               MESPT1   =       $09
+000000r 1               MESPT2   =       $0a
+000000r 1               MESPT3   =       $0b
+000000r 1               MESPT4   =       $0c
+000000r 1               MESPT5   =       $0d
+000000r 1               CODEST   =       $0e
+000000r 1               REPEAT   =       $0f
+000000r 1               LOOPCO   =       $11
+000000r 1               PADD     =       $1741
+000000r 1               SBD      =       $1742
+000000r 1               KEYIN    =       $1f40
+000000r 1               GETKEY   =       $1f6a
+000000r 1               
+000000r 1                        .org    $0200
+000200  1  D8           start:   cld
+000201  1  A9 00                 lda     #$00
+000203  1  85 04                 sta     SEGOF1
+000205  1  85 06                 sta     SEGOF2
+000207  1  85 08                 sta     SEGOF3
+000209  1  A9 03                 lda     #$03
+00020B  1  85 00                 sta     SEGPTR
+00020D  1  A9 03                 lda     #$03
+00020F  1  85 0F                 sta     REPEAT
+000211  1  A9 80                 lda     #$80
+000213  1  85 02                 sta     SPEED
+000215  1  A9 81                 lda     #$81
+000217  1  85 03                 sta     SEG1
+000219  1  A9 C1                 lda     #$c1
+00021B  1  85 05                 sta     SEG2
+00021D  1  A9 C9                 lda     #$c9
+00021F  1  85 07                 sta     SEG3
+000221  1  A9 3B                 lda     #$3b
+000223  1  85 09                 sta     MESPT1
+000225  1  A9 41                 lda     #$41
+000227  1  85 0A                 sta     MESPT2
+000229  1  A9 47                 lda     #$47
+00022B  1  85 0B                 sta     MESPT3
+00022D  1  A9 4D                 lda     #$4d
+00022F  1  85 0C                 sta     MESPT4
+000231  1  A9 53                 lda     #$53
+000233  1  85 0D                 sta     MESPT5
+000235  1  A9 07        startc:  lda     #$07
+000237  1  85 01                 sta     DIGPTR
+000239  1  E6 01        contin:  inc     DIGPTR
+00023B  1  E6 01                 inc     DIGPTR
+00023D  1  A5 01                 lda     DIGPTR
+00023F  1  C9 15                 cmp     #$15
+000241  1  F0 F2                 beq     startc
+000243  1  A6 00        toshow:  ldx     SEGPTR
+000245  1  B5 00                 lda     SEGPTR,x
+000247  1  85 0E                 sta     CODEST
+000249  1  20 54 02     liteup:  jsr     show
+00024C  1  A9 00                 lda     #$00
+00024E  1  8D 42 17              sta     SBD
+000251  1  4C 74 02              jmp     anykey
+000254  1               
+000254  1  A9 7F        show:    lda     #$7f
+000256  1  8D 41 17              sta     PADD
+000259  1  A5 01                 lda     DIGPTR
+00025B  1  8D 42 17              sta     SBD
+00025E  1  A5 0E                 lda     CODEST
+000260  1  8D 40 17              sta     PADD-1
+000263  1  A0 20                 ldy     #$20
+000265  1  88           loop:    dey
+000266  1  D0 FD                 bne     loop
+000268  1  60                    rts
+000269  1               
+000269  1  A2 80        pause:   ldx     #$80
+00026B  1  A0 FF        loop1:   ldy     #$ff
+00026D  1  88           loop2:   dey
+00026E  1  D0 FD                 bne     loop2
+000270  1  CA                    dex
+000271  1  D0 F8                 bne     loop1
+000273  1  60                    rts
+000274  1               
+000274  1  20 40 1F     anykey:  jsr     KEYIN
+000277  1  20 6A 1F              jsr     GETKEY
+00027A  1  C9 15                 cmp     #$15
+00027C  1  D0 17                 bne     gokey
+00027E  1  C6 02        nokey:   dec     SPEED
+000280  1  D0 C7                 bne     liteup
+000282  1  A9 80                 lda     #$80
+000284  1  85 02                 sta     SPEED
+000286  1  A5 00                 lda     SEGPTR
+000288  1  4A                    lsr     A
+000289  1  90 05                 bcc     nexdig
+00028B  1  E6 00                 inc     SEGPTR
+00028D  1  4C 43 02              jmp     toshow
+000290  1               
+000290  1  C6 00        nexdig:  dec     SEGPTR
+000292  1  4C 39 02              jmp     contin
+000295  1               
+000295  1  C9 13        gokey:   cmp     #$13
+000297  1  D0 06                 bne     key3
+000299  1  20 69 02              jsr     pause
+00029C  1  4C 00 02              jmp     start
+00029F  1               
+00029F  1  C9 03        key3:    cmp     #$03
+0002A1  1  D0 42                 bne     illkey
+0002A3  1  20 69 02              jsr     pause
+0002A6  1  A5 01                 lda     DIGPTR
+0002A8  1  C9 0F                 cmp     #$0f
+0002AA  1  D0 0E                 bne     miss
+0002AC  1  A5 00                 lda     SEGPTR
+0002AE  1  C9 03                 cmp     #$03
+0002B0  1  F0 54                 beq     win
+0002B2  1  C9 05                 cmp     #$05
+0002B4  1  F0 3D                 beq     hit
+0002B6  1  C9 07                 cmp     #$07
+0002B8  1  F0 39                 beq     hit
+0002BA  1  A5 00        miss:    lda     SEGPTR
+0002BC  1  48                    pha
+0002BD  1  A6 09                 ldx     MESPT1
+0002BF  1  20 12 03              jsr     messho
+0002C2  1  68           missco:  pla
+0002C3  1  85 00                 sta     SEGPTR
+0002C5  1  E6 00                 inc     SEGPTR
+0002C7  1  E6 00                 inc     SEGPTR
+0002C9  1  A5 00                 lda     SEGPTR
+0002CB  1  C9 09                 cmp     #$09
+0002CD  1  F0 07                 beq     lose
+0002CF  1  C9 0A                 cmp     #$0a
+0002D1  1  F0 03                 beq     lose
+0002D3  1  4C 35 02              jmp     startc
+0002D6  1               
+0002D6  1  A6 0D        lose:    ldx     MESPT5
+0002D8  1  20 12 03              jsr     messho
+0002DB  1  C6 0F                 dec     REPEAT
+0002DD  1  D0 F7                 bne     lose
+0002DF  1  20 69 02              jsr     pause
+0002E2  1  4C 00 02              jmp     start
+0002E5  1               
+0002E5  1  A5 00        illkey:  lda     SEGPTR
+0002E7  1  48                    pha
+0002E8  1  A6 0B                 ldx     MESPT3
+0002EA  1  20 12 03              jsr     messho
+0002ED  1  20 69 02              jsr     pause
+0002F0  1  4C C2 02              jmp     missco
+0002F3  1               
+0002F3  1  A5 00        hit:     lda     SEGPTR
+0002F5  1  48                    pha
+0002F6  1  A6 0A                 ldx     MESPT2
+0002F8  1  20 12 03              jsr     messho
+0002FB  1  68                    pla
+0002FC  1  85 00                 sta     SEGPTR
+0002FE  1  C6 00                 dec     SEGPTR
+000300  1  20 69 02              jsr     pause
+000303  1  4C 35 02              jmp     startc
+000306  1               
+000306  1  A6 0C        win:     ldx     MESPT4
+000308  1  20 12 03              jsr     messho
+00030B  1  C6 0F        segcode: dec     REPEAT
+00030D  1  D0 F7                 bne     win
+00030F  1  4C 00 02              jmp     start
+000312  1               
+000312  1  A9 80        messho:  lda     #$80
+000314  1  85 11                 sta     LOOPCO
+000316  1  A9 07        digsta:  lda     #$07
+000318  1  85 01                 sta     DIGPTR
+00031A  1  BD 0B 03     segsta:  lda     segcode,x
+00031D  1  85 0E                 sta     CODEST
+00031F  1  E6 01                 inc     DIGPTR
+000321  1  E6 01                 inc     DIGPTR
+000323  1  A5 01                 lda     DIGPTR
+000325  1  C9 15                 cmp     #$15
+000327  1  F0 0C                 beq     xzero
+000329  1  20 54 02     srshow:  jsr     show
+00032C  1  A9 00                 lda     #$00
+00032E  1  8D 40 17              sta     PADD-1
+000331  1  E8                    inx
+000332  1  4C 1A 03              jmp     segsta
+000335  1               
+000335  1  CA           xzero:   dex
+000336  1  CA                    dex
+000337  1  CA                    dex
+000338  1  CA                    dex
+000339  1  CA                    dex
+00033A  1  CA                    dex
+00033B  1  C6 11                 dec     LOOPCO
+00033D  1  D0 04                 bne     again
+00033F  1  20 69 02              jsr     pause
+000342  1  60                    rts
+000343  1               
+000343  1  4C 16 03     again:   jmp     digsta
+000346  1               
+000346  1  B7                    .byte   $b7
+000347  1  BF                    .byte   $bf
+000348  1  80                    .byte   $80
+000349  1  F4                    .byte   $f4
+00034A  1  86                    .byte   $86
+00034B  1  F8                    .byte   $f8
+00034C  1  80                    .byte   $80
+00034D  1  F4                    .byte   $f4
+00034E  1  86                    .byte   $86
+00034F  1  F8                    .byte   $f8
+000350  1  80                    .byte   $80
+000351  1  80                    .byte   $80
+000352  1  F1                    .byte   $f1
+000353  1  BF                    .byte   $bf
+000354  1  BE                    .byte   $be
+000355  1  B8                    .byte   $b8
+000356  1  80                    .byte   $80
+000357  1  80                    .byte   $80
+000358  1  F6                    .byte   $f6
+000359  1  9C                    .byte   $9c
+00035A  1  D0                    .byte   $d0
+00035B  1  D0                    .byte   $d0
+00035C  1  F7                    .byte   $f7
+00035D  1  EE                    .byte   $ee
+00035E  1  ED                    .byte   $ed
+00035F  1  F8                    .byte   $f8
+000360  1  9C                    .byte   $9c
+000361  1  F3                    .byte   $f3
+000362  1  84                    .byte   $84
+000363  1  DE                    .byte   $de
+000363  1               
