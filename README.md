@@ -1,5 +1,7 @@
 # Target1-for-KIM-1
 
+![cover](https://github.com/netzherpes/Target1-for-KIM-1/raw/main/image/target%231.jpg)
+
 Little shooting game for the KIM-1
 
 June 18th, 1979<br>
