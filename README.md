@@ -1,6 +1,6 @@
 # Target1-for-KIM-1
 
-![cover](https://github.com/netzherpes/Target1-for-KIM-1/raw/main/image/target%231.jpg)
+![cover](https://github.com/netzherpes/Target1-for-KIM-1/raw/main/image/target%231n.jpg)
 
 Little shooting game for the KIM-1
 
